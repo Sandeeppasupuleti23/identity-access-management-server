@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: iam-postgres
+    environment:
+      POSTGRES_DB: iam_db
+      POSTGRES_USER: iam_user
+      POSTGRES_PASSWORD: iam_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U iam_user -d iam_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: iam-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  iam-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iam-server
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/iam_db
+      DB_USERNAME: iam_user
+      DB_PASSWORD: iam_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      APP_BASE_URL: http://localhost:8080
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost:8080/actuator/health || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  postgres_data:

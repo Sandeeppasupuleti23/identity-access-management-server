@@ -1,0 +1,11 @@
+target/
+.idea/
+*.iml
+*.log
+.env
+.vscode/
+keys/
+.DS_Store
+
+# Local backup files
+*.bak

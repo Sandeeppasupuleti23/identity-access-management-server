@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>IAM Login</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 60px auto; padding: 30px; border: 1px solid #ddd; border-radius: 10px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #0d6efd; color: white; border: none; border-radius: 8px; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+<h2>IAM Server Login</h2>
+<div class="error" th:if="${param.error != null}">Invalid username or password</div>
+<div class="error" th:if="${param.logout != null}">You have been logged out</div>
+<form th:action="@{/login}" method="post">
+    <input type="text" name="username" placeholder="Username" required />
+    <input type="password" name="password" placeholder="Password" required />
+    <button type="submit">Login</button>
+</form>
+</body>
+</html>
