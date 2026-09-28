@@ -1,7 +1,8 @@
 spring:
   jpa:
     show-sql: true
-  logging:
-    level:
-      root: INFO
-      org.springframework.security: INFO
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: INFO
