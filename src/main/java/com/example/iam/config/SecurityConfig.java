@@ -36,10 +36,7 @@ public class SecurityConfig {
         http.exceptionHandling(exceptions -> exceptions
                 .defaultAuthenticationEntryPointFor(
                         new LoginUrlAuthenticationEntryPoint("/login"),
-                        new AntPathRequestMatcher("/oauth2/**"))
-                .defaultAuthenticationEntryPointFor(
-                        new LoginUrlAuthenticationEntryPoint("/login"),
-                        new AntPathRequestMatcher("/api/**")));
+                        new AntPathRequestMatcher("/oauth2/**")));
 
         http.oauth2ResourceServer(resource -> resource.jwt(Customizer.withDefaults()));
         return http.build();
@@ -56,6 +53,7 @@ public class SecurityConfig {
                                 "/login",
                                 "/error",
                                 "/api/auth/register",
+                                "/api/auth/login",
                                 "/api/auth/forgot-password",
                                 "/api/auth/reset-password",
                                 "/oauth2/**",
