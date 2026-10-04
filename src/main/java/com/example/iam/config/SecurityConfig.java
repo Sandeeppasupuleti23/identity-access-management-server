@@ -1,4 +1,4 @@
-package com.example.iam.config;
+﻿package com.example.iam.config;
 
 import com.example.iam.service.UserService;
 import org.springframework.context.annotation.Bean;
@@ -79,8 +79,8 @@ public class SecurityConfig {
                         .authenticated()
                         .anyRequest().authenticated())
                 .formLogin(form -> form
-                        .loginPage("/login")
                         .permitAll())
+                .oauth2Login(Customizer.withDefaults())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
@@ -112,3 +112,8 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 }
+
+
+
+
+

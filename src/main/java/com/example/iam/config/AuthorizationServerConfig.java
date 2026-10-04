@@ -33,7 +33,7 @@ public class AuthorizationServerConfig {
     public RegisteredClientRepository registeredClientRepository() {
         RegisteredClient webClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("iam-web-client")
-                .clientSecret("{bcrypt}$2a$10$PjSg0o8Q0nP5zM2A1eN9rOkh6R7mx1mR2M0AkYw9NTWnK8o3m5r3O")
+                .clientSecret("{bcrypt}$2a$10$02.uRsTZpQviCSXPZVXWcunkyp/mAYlAzFcBwyTd/PWWVjP1pcN3u")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
