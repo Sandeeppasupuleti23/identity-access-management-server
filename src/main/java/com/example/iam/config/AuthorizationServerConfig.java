@@ -47,7 +47,7 @@ public class AuthorizationServerConfig {
 
         RegisteredClient serviceClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("iam-service-client")
-                .clientSecret("$2a$10$sIKO3eC2WvTmo9ND.ugkAO/fG10rkZU0NQAQLDInZHHphGswVwNeO")
+                .clientSecret("$2a$10$TDOD9Zbco6QkGNNtZysVKOQ.1YIjmR0wY8FfmUaBfmx6DGuxx6m0S")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .scope("user.read")
@@ -70,6 +70,7 @@ public class AuthorizationServerConfig {
                 .build();
     }
 }
+
 
 
 

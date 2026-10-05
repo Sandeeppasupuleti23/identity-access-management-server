@@ -1,30 +1,98 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Consent</title>
+    <meta charset="UTF-8">
+    <title>Application Consent</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 60px auto; padding: 30px; border: 1px solid #ddd; border-radius: 10px; }
-        ul { margin-top: 16px; }
-        .actions { display: flex; gap: 12px; margin-top: 20px; }
-        button { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; }
-        .approve { background: #198754; color: white; }
-        .deny { background: #dc3545; color: white; }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 30px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+
+        ul {
+            margin-top: 16px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .approve {
+            background: #198754;
+            color: white;
+        }
+
+        .deny {
+            background: #dc3545;
+            color: white;
+        }
     </style>
 </head>
+
 <body>
+
 <h2>Application Consent</h2>
-<p><strong th:text="${clientId}">iam-web-client</strong> is requesting access to:</p>
+
+<p>
+    <strong th:text="${clientId}">iam-web-client</strong>
+    is requesting access to:
+</p>
+
 <ul>
-    <li th:each="entry : ${#strings.arraySplit(scope, ' ')}" th:text="${entry}">scope</li>
+    <li th:each="entry : ${#strings.arraySplit(scope, ' ')}"
+        th:text="${entry}">
+        scope
+    </li>
 </ul>
-<form method="post" th:action="@{/oauth2/consent}">
-    <input type="hidden" name="client_id" th:value="${clientId}" />
-    <input type="hidden" name="state" th:value="${param.state[0]}" />
-    <input type="hidden" name="scope" th:value="${scope}" />
-    <div class="actions">
-        <button class="approve" type="submit" name="approved" value="true">Approve</button>
-        <button class="deny" type="submit" name="approved" value="false">Deny</button>
+
+<form method="post" th:action="@{/oauth2/authorize}">
+
+    <input type="hidden"
+           name="client_id"
+           th:value="${clientId}" />
+
+    <input type="hidden"
+           name="state"
+           th:value="${state}" />
+
+    <div th:each="entry : ${#strings.arraySplit(scope, ' ')}">
+        <input type="hidden"
+               name="scope"
+               th:value="${entry}" />
     </div>
+
+    <div class="actions">
+
+        <button class="approve"
+                type="submit"
+                name="user_oauth_approval"
+                value="true">
+            Approve
+        </button>
+
+        <button class="deny"
+                type="submit"
+                name="user_oauth_approval"
+                value="false">
+            Deny
+        </button>
+
+    </div>
+
 </form>
+
 </body>
 </html>
