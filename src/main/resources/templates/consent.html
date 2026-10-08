@@ -1,98 +1,225 @@
 ﻿<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Application Consent</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Authorization Consent</title>
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 60px auto;
-            padding: 30px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
+        * {
+            box-sizing: border-box;
         }
 
-        ul {
-            margin-top: 16px;
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            color: #212529;
+        }
+
+        .consent-card {
+            width: 100%;
+            max-width: 520px;
+            margin: 24px;
+            padding: 32px;
+            background: #ffffff;
+            border: 1px solid #e1e5e9;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .header {
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 26px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #6c757d;
+            line-height: 1.5;
+        }
+
+        .client {
+            margin-bottom: 24px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .client-label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .client-name {
+            font-size: 17px;
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        .permissions h2 {
+            margin: 0 0 12px;
+            font-size: 17px;
+        }
+
+        .permissions ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .permissions li {
+            margin-bottom: 10px;
+            padding: 12px 14px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 7px;
+            font-size: 14px;
         }
 
         .actions {
             display: flex;
             gap: 12px;
-            margin-top: 20px;
+            margin-top: 28px;
         }
 
-        button {
-            padding: 10px 20px;
+        .actions button {
+            flex: 1;
+            padding: 12px 18px;
             border: none;
-            border-radius: 8px;
+            border-radius: 7px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
         }
 
         .approve {
             background: #198754;
-            color: white;
+            color: #ffffff;
+        }
+
+        .approve:hover {
+            background: #157347;
         }
 
         .deny {
             background: #dc3545;
-            color: white;
+            color: #ffffff;
+        }
+
+        .deny:hover {
+            background: #bb2d3b;
+        }
+
+        .notice {
+            margin-top: 20px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #6c757d;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .consent-card {
+                padding: 24px;
+                margin: 16px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<h2>Application Consent</h2>
+<div class="consent-card">
 
-<p>
-    <strong th:text="${clientId}">iam-web-client</strong>
-    is requesting access to:
-</p>
+    <div class="header">
+        <h1>Authorization Request</h1>
+        <p>
+            Review the permissions requested by this application before continuing.
+        </p>
+    </div>
 
-<ul>
-    <li th:each="entry : ${#strings.arraySplit(scope, ' ')}"
-        th:text="${entry}">
-        scope
-    </li>
-</ul>
+    <div class="client">
+        <span class="client-label">Application</span>
 
-<form method="post" th:action="@{/oauth2/authorize}">
+        <div class="client-name"
+             th:text="${clientId}">
+            iam-web-client
+        </div>
+    </div>
 
-    <input type="hidden"
-           name="client_id"
-           th:value="${clientId}" />
+    <div class="permissions">
 
-    <input type="hidden"
-           name="state"
-           th:value="${state}" />
+        <h2>Requested permissions</h2>
 
-    <div th:each="entry : ${#strings.arraySplit(scope, ' ')}">
+        <ul>
+            <li th:each="entry : ${#strings.arraySplit(scope, ' ')}"
+                th:text="${entry}">
+                permission
+            </li>
+        </ul>
+
+    </div>
+
+    <form method="post"
+          th:action="@{/oauth2/authorize}">
+
         <input type="hidden"
-               name="scope"
-               th:value="${entry}" />
+               name="client_id"
+               th:value="${clientId}" />
+
+        <input type="hidden"
+               name="state"
+               th:value="${state}" />
+
+        <div th:each="entry : ${#strings.arraySplit(scope, ' ')}">
+
+            <input type="hidden"
+                   name="scope"
+                   th:value="${entry}" />
+
+        </div>
+
+        <div class="actions">
+
+            <button type="submit"
+                    class="approve"
+                    name="user_oauth_approval"
+                    value="true">
+                Approve
+            </button>
+
+            <button type="submit"
+                    class="deny"
+                    name="user_oauth_approval"
+                    value="false">
+                Deny
+            </button>
+
+        </div>
+
+    </form>
+
+    <div class="notice">
+        By approving, you allow the application to access the permissions listed above.
     </div>
 
-    <div class="actions">
-
-        <button class="approve"
-                type="submit"
-                name="user_oauth_approval"
-                value="true">
-            Approve
-        </button>
-
-        <button class="deny"
-                type="submit"
-                name="user_oauth_approval"
-                value="false">
-            Deny
-        </button>
-
-    </div>
-
-</form>
+</div>
 
 </body>
 </html>
