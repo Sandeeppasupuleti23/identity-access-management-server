@@ -15,12 +15,14 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class OtpService {
 
+    private static final int MAX_ATTEMPTS = 5;
+
     private final UserRepository userRepository;
     private final MfaOtpRepository otpRepository;
     private final SecureRandom secureRandom = new SecureRandom();
 
     public String generateOtp() {
-        return String.format("%06d", secureRandom.nextInt(1000000));
+        return String.format("%06d", secureRandom.nextInt(1_000_000));
     }
 
     @Transactional
@@ -34,24 +36,43 @@ public class OtpService {
         otp.setUsed(false);
         return otpRepository.save(otp);
     }
-
-    @Transactional
+@Transactional(noRollbackFor = IllegalArgumentException.class)
     public boolean verifyOtp(String username, String purpose, String code) {
         UserEntity user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        MfaOtp otp = otpRepository.findTopByUserAndPurposeOrderByExpiresAtDesc(user, purpose)
+        MfaOtp otp = otpRepository
+                .findTopByUserAndPurposeOrderByExpiresAtDesc(user, purpose)
                 .orElseThrow(() -> new IllegalArgumentException("No OTP found"));
 
-        if (otp.isUsed() || otp.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("OTP expired or already used");
+        if (otp.isUsed()) {
+            throw new IllegalArgumentException("OTP already used");
         }
 
-        otp.setAttempts(otp.getAttempts() + 1);
-        otpRepository.save(otp);
+        if (otp.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("OTP expired");
+        }
 
-        if (!otp.getOtp().equals(code)) {
-            throw new IllegalArgumentException("Invalid OTP");
+        if (otp.getAttempts() >= MAX_ATTEMPTS) {
+            otp.setUsed(true);
+            otpRepository.save(otp);
+            throw new IllegalArgumentException("Maximum OTP attempts exceeded");
+        }
+
+        if (code == null || !code.matches("\\d{6}") || !otp.getOtp().equals(code)) {
+            int attempts = otp.getAttempts() + 1;
+            otp.setAttempts(attempts);
+
+            if (attempts >= MAX_ATTEMPTS) {
+                otp.setUsed(true);
+            }
+
+            otpRepository.save(otp);
+            throw new IllegalArgumentException(
+                    attempts >= MAX_ATTEMPTS
+                            ? "Maximum OTP attempts exceeded"
+                            : "Invalid OTP"
+            );
         }
 
         otp.setUsed(true);
