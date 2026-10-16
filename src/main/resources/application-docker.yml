@@ -16,3 +16,6 @@ management:
   health:
     redis:
       enabled: true
+    mail:
+      enabled: false
+

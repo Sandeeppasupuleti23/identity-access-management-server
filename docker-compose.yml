@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: iam_db
       POSTGRES_USER: iam_user
-      POSTGRES_PASSWORD: iam_password
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
     ports:
       - "5432:5432"
     volumes:
@@ -40,7 +40,7 @@ services:
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/iam_db
       DB_USERNAME: iam_user
-      DB_PASSWORD: iam_password
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
       REDIS_HOST: redis
       REDIS_PORT: 6379
       APP_BASE_URL: http://localhost:8080
